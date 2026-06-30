@@ -1,0 +1,127 @@
+package myparser;
+
+import java_cup.runtime.*;
+
+terminal NAME, ID, NUM, STRING, COMMA, ASSIGN;
+terminal REPEAT, TIMES, UNTIL, FROM, TO;
+terminal IF_TOKEN, ELSE_TOKEN;
+terminal INPUT_TOKEN, PRINT_TOKEN;
+terminal LBRACE, RBRACE, LPAREN, RPAREN;
+terminal PLUS, MINUS, DIVIDE, MULTIPLY;
+terminal LESS_THAN, GREATER_THAN, EQUALS, NOT_EQUALS;
+terminal NUMBER, STRING_LITERAL, NUMVAL, TEXTVAL;
+
+non terminal program, identification, optional_id;
+non terminal declarations, declaration, varlist, variable;
+non terminal statements, statement;
+non terminal assignment, repetition, conditional, else;
+non terminal input, output;
+non terminal expression, expression_prime, term;
+non terminal condition, operation, logical;
+
+program ::=
+    identification declarations statements
+    ;
+
+identification ::=
+    NAME STRING_LITERAL optional_id
+    ;
+
+optional_id ::=
+    ID NUMBER
+    | /* epsilon */
+    ;
+
+declarations ::=
+    declaration declarations
+    | /* epsilon */
+    ;
+
+declaration ::=
+    NUM varlist
+    | STRING varlist
+    ;
+
+varlist ::=
+    variable COMMA varlist
+    | variable
+    ;
+
+variable ::=
+    NUMVAL
+    | TEXTVAL
+    ;
+
+statements ::= statement statements
+    | /* epsilon */
+    ;
+
+statement ::=
+    assignment
+    | repetition
+    | conditional
+    | input
+    | output
+    ;
+
+assignment ::=
+    variable ASSIGN expression
+    ;
+
+repetition ::=
+    REPEAT expression TIMES LBRACE statements RBRACE
+    | REPEAT LBRACE statements RBRACE UNTIL condition
+    | FROM expression TO expression LBRACE statements RBRACE
+    ;
+
+conditional ::=
+    IF_TOKEN condition LBRACE statements RBRACE else
+    ;
+
+else ::=
+    ELSE_TOKEN LBRACE statements RBRACE
+    | /* epsilon */
+    ;
+
+input ::= INPUT_TOKEN STRING_LITERAL variable;
+
+/* Grammar changed to remove ambiguity */
+
+output ::=
+    PRINT_TOKEN STRING_LITERAL
+    | PRINT_TOKEN LPAREN expression RPAREN
+    | PRINT_TOKEN STRING_LITERAL LPAREN expression RPAREN
+    ;
+
+expression ::= term expression_prime;
+
+expression_prime ::=
+    operation term expression_prime
+    | /* epsilon */
+    ;
+
+term ::= variable
+    | NUMBER
+    ;
+
+condition ::=
+    expression logical expression
+    ;
+
+operation ::=
+    PLUS
+    | MINUS
+    | DIVIDE
+    | MULTIPLY
+    ;
+
+logical ::=
+    LESS_THAN
+    | GREATER_THAN
+    | EQUALS
+    | NOT_EQUALS
+    ;
+
+
+
+
