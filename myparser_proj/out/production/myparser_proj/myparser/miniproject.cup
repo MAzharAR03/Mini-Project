@@ -2,124 +2,160 @@ package myparser;
 
 import java_cup.runtime.*;
 
-terminal NAME, ID, NUM, STRING, COMMA, ASSIGN;
-terminal REPEAT, TIMES, UNTIL, FROM, TO;
-terminal IF_TOKEN, ELSE_TOKEN;
-terminal INPUT_TOKEN, PRINT_TOKEN;
-terminal LBRACE, RBRACE, LPAREN, RPAREN;
-terminal PLUS, MINUS, DIVIDE, MULTIPLY;
-terminal LESS_THAN, GREATER_THAN, EQUALS, NOT_EQUALS;
-terminal NUMBER, STRING_LITERAL, NUMVAL, TEXTVAL;
+terminal Node NAME, ID, NUM, STRING, COMMA, ASSIGN;
+terminal Node REPEAT, TIMES, UNTIL, FROM, TO;
+terminal Node IF_TOKEN, ELSE_TOKEN;
+terminal Node INPUT_TOKEN, PRINT_TOKEN;
+terminal Node LBRACE, RBRACE, LPAREN, RPAREN;
+terminal Node PLUS, MINUS, DIVIDE, MULTIPLY;
+terminal Node LESS_THAN, GREATER_THAN, EQUALS, NOT_EQUALS;
+terminal Node NUMBER, STRING_LITERAL, NUMVAL, TEXTVAL;
 
-non terminal program, identification, optional_id;
-non terminal declarations, declaration, varlist, variable;
-non terminal statements, statement;
-non terminal assignment, repetition, conditional, else;
-non terminal input, output;
-non terminal expression, expression_prime, term;
-non terminal condition, operation, logical;
+non terminal Node program, identification, optional_id;
+non terminal Node declarations, declaration, varlist, variable;
+non terminal Node statements, statement;
+non terminal Node assignment, repetition, conditional, else;
+non terminal Node input, output;
+non terminal Node expression, expression_prime, term;
+non terminal Node condition, operation, logical;
 
 program ::=
-    identification declarations statements
+    identification:i declarations:d statements:s
+    {: RESULT = new Node("program"); RESULT.addChild(i); RESULT.addChild(d); RESULT.addChild(s); :}
     ;
 
 identification ::=
-    NAME STRING_LITERAL optional_id
+    NAME STRING_LITERAL:s optional_id:o
+    {: RESULT = new Node("identification"); RESULT.addChild(s); RESULT.addChild(o); :}
     ;
 
 optional_id ::=
-    ID NUMBER
+    ID NUMBER:n
+    {: RESULT = new Node("optional id"); RESULT.addChild(n); :}
     | /* epsilon */
+    {: RESULT = new Node("optional id"); :}
     ;
 
 declarations ::=
-    declaration declarations
+    declaration:d declarations:ds
+    {: RESULT = new Node("declarations"); RESULT.addChild(d); RESULT.addChild(ds); :}
     | /* epsilon */
+    {: RESULT = new Node("declarations"); :}
     ;
 
 declaration ::=
-    NUM varlist
-    | STRING varlist
+    NUM varlist:v
+    {: RESULT = new Node("declaration", "num"); RESULT.addChild(v); :}
+    | STRING varlist:v
+     {: RESULT = new Node("declaration", "string"); RESULT.addChild(v); :}
     ;
 
 varlist ::=
-    variable COMMA varlist
-    | variable
+    variable:v COMMA varlist:vs
+    {: RESULT = new Node("varlist"); RESULT.addChild(v); RESULT.addChild(vs); :}
+    | variable:v
+    {: RESULT = new Node("varlist"); RESULT.addChild(v); :}
     ;
 
 variable ::=
-    NUMVAL
-    | TEXTVAL
+    NUMVAL:v
+    {: RESULT = v; :}
+    | TEXTVAL:v
+    {: RESULT = v; :}
     ;
 
-statements ::= statement statements
+statements ::=
+    statement:s statements:ss
+    {: RESULT = new Node("statements"); RESULT.addChild(s); RESULT.addChild(ss); :}
     | /* epsilon */
+    {: RESULT = new Node("statements"); :}
     ;
 
 statement ::=
-    assignment
-    | repetition
-    | conditional
-    | input
-    | output
+    assignment:a {: RESULT = a; :}
+    | repetition:r {: RESULT = r; :}
+    | conditional:c {: RESULT = c; :}
+    | input:i {: RESULT = i; :}
+    | output:o {: RESULT = o; :}
     ;
 
 assignment ::=
-    variable ASSIGN expression
+    variable:v ASSIGN expression:e
+    {: RESULT = new Node("assignment"); RESULT.addChild(v); RESULT.addChild(e); :}
     ;
 
 repetition ::=
-    REPEAT expression TIMES LBRACE statements RBRACE
-    | REPEAT LBRACE statements RBRACE UNTIL condition
-    | FROM expression TO expression LBRACE statements RBRACE
+    REPEAT expression:e TIMES LBRACE statements:s RBRACE
+    {: RESULT = new Node("repetition", "repeat_times"); RESULT.addChild(e); RESULT.addChild(s); :}
+    | REPEAT LBRACE statements:s RBRACE UNTIL condition:c
+    {: RESULT = new Node("repetition", "repeat_until"); RESULT.addChild(s); RESULT.addChild(c); :}
+    | FROM expression:e1 TO expression:e2 LBRACE statements:s RBRACE
+    {: RESULT = new Node("repetition", "from_to"); RESULT.addChild(e1); RESULT.addChild(e2); RESULT.addChild(s); :}
     ;
 
 conditional ::=
-    IF_TOKEN condition LBRACE statements RBRACE else
+    IF_TOKEN condition:c LBRACE statements:s RBRACE else:e
+    {: RESULT = new Node("conditional"); RESULT.addChild(c); RESULT.addChild(s); RESULT.addChild(e); :}
     ;
 
 else ::=
-    ELSE_TOKEN LBRACE statements RBRACE
+    ELSE_TOKEN LBRACE statements:s RBRACE
+    {: RESULT = new Node("else"); RESULT.addChild(s); :}
     | /* epsilon */
+    {: RESULT = new Node("else"); :}
     ;
 
-input ::= INPUT_TOKEN STRING_LITERAL variable;
-
+input ::=
+    INPUT_TOKEN STRING_LITERAL:s variable:v
+    {: RESULT = new Node("input"); RESULT.addChild(s); RESULT.addChild(v); :}
+    ;
 /* Grammar changed to remove ambiguity */
 
 output ::=
-    PRINT_TOKEN STRING_LITERAL
-    | PRINT_TOKEN LPAREN expression RPAREN
-    | PRINT_TOKEN STRING_LITERAL LPAREN expression RPAREN
+    PRINT_TOKEN STRING_LITERAL:s
+    {: RESULT = new Node("output", "print_string"); RESULT.addChild(s); :}
+    | PRINT_TOKEN LPAREN expression:e RPAREN
+    {: RESULT = new Node("output", "print_expr"); RESULT.addChild(e); :}
+    | PRINT_TOKEN STRING_LITERAL:s LPAREN expression:e RPAREN
+    {: RESULT = new Node("output", "print_both"); RESULT.addChild(s); RESULT.addChild(e); :}
     ;
 
-expression ::= term expression_prime;
+expression ::=
+    term:t expression_prime:e
+    {: RESULT = new Node("expression"); RESULT.addChild(t); RESULT.addChild(e); :}
+    ;
 
 expression_prime ::=
-    operation term expression_prime
+    operation:o term:t expression_prime:e
+    {: RESULT = new Node("expression_prime"); RESULT.addChild(o); RESULT.addChild(t); RESULT.addChild(e); :}
     | /* epsilon */
+     {: RESULT = new Node("expression_prime"); :}
     ;
 
-term ::= variable
-    | NUMBER
+term ::=
+    variable:v
+    {: RESULT = v; :}
+    | NUMBER:n
+    {: RESULT = n; :}
     ;
 
 condition ::=
-    expression logical expression
+    expression:e1 logical:l expression:e2
+    {: RESULT = new Node("condition"); RESULT.addChild(e1); RESULT.addChild(l); RESULT.addChild(e2); :}
     ;
 
 operation ::=
-    PLUS
-    | MINUS
-    | DIVIDE
-    | MULTIPLY
+    PLUS:p {: RESULT = p; :}
+    | MINUS:m {: RESULT = m; :}
+    | DIVIDE:d {: RESULT = d; :}
+    | MULTIPLY:m {: RESULT = m; :}
     ;
 
 logical ::=
-    LESS_THAN
-    | GREATER_THAN
-    | EQUALS
-    | NOT_EQUALS
+    LESS_THAN:l {: RESULT = l; :}
+    | GREATER_THAN:g {: RESULT = g; :}
+    | EQUALS:e {: RESULT = e; :}
+    | NOT_EQUALS:n {: RESULT = n; :}
     ;
 
 

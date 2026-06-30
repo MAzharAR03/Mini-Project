@@ -14,7 +14,7 @@ terminal Integer NUMBER;
 non terminal program, functions, functions_prime, function;
 non terminal String header, parameters, parameters_prime;
 non terminal variables, variables_prime, variable;
-non terminal statements, statements_prime, statement, statement_prime;
+non terminal statements, statements1_prime, statement, statement_prime;
 non terminal String expr, expr_prime, cond, cond_prime, type;
 
 program ::=

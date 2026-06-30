@@ -1,9 +1,9 @@
-name demo id 1
+name azhar id 1
 num ab1 , cd2
 string ef$
 ab1 = 5
 input enter ab1
-print result ( ab1 )
+print result (ab1)
 if ab1 > 3 {
     print big
 } else {

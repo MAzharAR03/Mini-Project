@@ -1,4 +1,4 @@
-name demo id 1
+name azhar id 1
 num ab1 , cd2
 string ef$
 ab1 = 5

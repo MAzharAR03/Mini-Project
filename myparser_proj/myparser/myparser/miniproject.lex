@@ -43,12 +43,14 @@ import java.io.*;
 
     private Symbol symbol(int type) {
         System.out.println("TOKEN: " + TOKEN_NAMES[type]);
-        return new Symbol(type);
+        Node node = new Node(TOKEN_NAMES[type], TOKEN_NAMES[type], yyline);
+        return new Symbol(type, node);
     }
 
     private Symbol symbol(int type, Object value) {
-        System.out.println("TOKEN: " + TOKEN_NAMES[type] + " -> " + value);
-        return new Symbol(type, value);
+        System.out.println("TOKEN: " + TOKEN_NAMES[type] + ":" + value);
+        Node node = new Node(String.valueOf(value), TOKEN_NAMES[type], yyline);
+        return new Symbol(type, node);
     }
 %}
 
@@ -97,9 +99,6 @@ STRING_LITERAL = {LETTER}+
 "*" {return symbol(sym.MULTIPLY);}
 ">" {return symbol(sym.GREATER_THAN);}
 "<" {return symbol(sym.LESS_THAN);}
-
-
-
 
 
 {WhiteSpace} { /* ignore white space. */ }
