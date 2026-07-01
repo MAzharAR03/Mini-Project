@@ -43,7 +43,7 @@ class Main {
               CodeGenerator codeGenerator = new CodeGenerator();
               String outputProgram = codeGenerator.generate(root);
               try {
-                  Files.writeString(Path.of("D:\\Assignment\\Mini-Project\\myparser_proj\\myparser\\myparser\\output.java"), outputProgram);
+                  Files.writeString(Path.of("D:\\Assignment\\Mini-Project\\myparser_proj\\myparser\\myparser\\GeneratedProgram.java"), outputProgram);
                   System.out.println("File saved successfully.");
               } catch (IOException e){
                   e.printStackTrace();
