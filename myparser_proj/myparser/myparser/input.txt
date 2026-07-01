@@ -2,6 +2,8 @@ name azhar id 1
 num ab1 , cd2
 string ef$
 ab1 = 5
+ab2 = 3
+ab1 = ef$
 input enter ab1
 print result (ab1)
 if ab1 > 3 {

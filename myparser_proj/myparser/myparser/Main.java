@@ -3,14 +3,16 @@
 package myparser;
 
 import java.io.*;
+import java.util.List;
+
 import java_cup.runtime.Symbol;
 
 class Main {
 
-  static boolean do_debug_parse = true;
+  static boolean do_debug_parse = false;
 
   static public void main(String[] args) throws IOException {
-      File infile = new File("E:\\MiniProject\\myparser_proj\\myparser\\myparser\\input.txt");
+      File infile = new File("D:\\Assignment\\Mini-Project\\myparser_proj\\myparser\\myparser\\input.txt");
       FileInputStream fin = null;
       try
       {
@@ -30,7 +32,17 @@ class Main {
           if (root != null) { 
               System.out.println("Parse Tree:"); 
               root.printTree(""); 
-          } 
+          }
+          SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+          List<String> errors = semanticAnalyzer.analyze(root);
+          if (errors.isEmpty())
+          {
+              System.out.println("No semantic errors");
+          } else {
+              for (String e : errors){
+                  System.out.println(e);
+              }
+          }
           fin.close();
       }
       catch(FileNotFoundException e)
