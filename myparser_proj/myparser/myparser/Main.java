@@ -3,6 +3,8 @@
 package myparser;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import java_cup.runtime.Symbol;
@@ -38,6 +40,14 @@ class Main {
           if (errors.isEmpty())
           {
               System.out.println("No semantic errors");
+              CodeGenerator codeGenerator = new CodeGenerator();
+              String outputProgram = codeGenerator.generate(root);
+              try {
+                  Files.writeString(Path.of("D:\\Assignment\\Mini-Project\\myparser_proj\\myparser\\myparser\\output.java"), outputProgram);
+                  System.out.println("File saved successfully.");
+              } catch (IOException e){
+                  e.printStackTrace();
+              }
           } else {
               for (String e : errors){
                   System.out.println(e);

@@ -8,6 +8,10 @@ public class SemanticAnalyzer {
     private HashMap<String, String> symbolTable = new HashMap<>();
     private List<String> errors = new ArrayList<>();
 
+
+    public HashMap<String, String> getSymbolTable() {
+        return symbolTable;
+    }
     public List<String> analyze(Node programNode) {
         Node declarations = programNode.children.get(1);
         Node statements = programNode.children.get(2);
