@@ -1,14 +1,9 @@
-name azhar id 1
-num ab1 , cd2
-string ef$
-ab1 = 5
-input enter ab1
-print result (ab1)
-if ab1 > 3 {
-    print big
-} else {
-    print small
-}
-repeat ab1 times {
-    print loop
+name azhar id 2
+num mx1, op1, rs1
+input enter mx1
+op1 = 1
+repeat 10 times {
+    rs1 = mx1 * op1
+    print result (rs1)
+    op1 = op1 + 1
 }

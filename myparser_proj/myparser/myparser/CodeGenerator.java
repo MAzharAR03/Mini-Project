@@ -6,10 +6,12 @@ public class CodeGenerator {
 
 
     public String generate(Node programNode) {
+        Node identification = programNode.children.get(0);
         Node declarations = programNode.children.get(1);
         Node statements = programNode.children.get(2);
 
-
+        genIdentification(identification);
+        stringBuilder.append("package myparser;\n");
         stringBuilder.append("import java.util.Scanner;\n");
         stringBuilder.append("public class GeneratedProgram {\n");
         stringBuilder.append("public static void main(String[] args) {\n");
@@ -21,9 +23,43 @@ public class CodeGenerator {
 
         stringBuilder.append("    }\n");
         stringBuilder.append("}\n");
-        return stringBuilder.toString();
+        return indentCode(stringBuilder.toString());
     }
 
+    private String indentCode(String code) {
+        StringBuilder result = new StringBuilder();
+        int indentLevel = 0;
+
+        for (String line : code.split("\n")) {
+            String trimmed = line.trim();
+
+            if (trimmed.startsWith("}")) {
+                indentLevel--;
+            }
+
+            for (int i = 0; i < indentLevel; i++) {
+                result.append("    ");
+            }
+            result.append(trimmed).append("\n");
+
+            if (trimmed.endsWith("{")) {
+                indentLevel++;
+            }
+        }
+
+        return result.toString();
+    }
+
+    private void genIdentification(Node node) {
+        Node nameNode = node.children.get(0);
+        Node optionalId = node.children.get(1);
+
+        stringBuilder.append("// Program: ").append(nameNode.value).append("\n");
+        if (!optionalId.children.isEmpty()) {
+            Node idNode = optionalId.children.get(0);
+            stringBuilder.append("// ID: ").append(idNode.value).append("\n");
+        }
+    }
     private void genDeclarations(Node node) {
         if (node.children.isEmpty()) return;
 
@@ -142,7 +178,7 @@ public class CodeGenerator {
             Node expression = node.children.get(1);
             String exprCode = genExpression(expression);
             stringBuilder.append("System.out.println(\"").append(stringLiteral.value)
-                    .append("\" + ").append(exprCode).append(");\n");
+                    .append(": \" + ").append(exprCode).append(");\n");
         }
     }
 
@@ -150,7 +186,7 @@ public class CodeGenerator {
         Node stringLiteral = node.children.get(0);
         Node variable = node.children.get(1);
 
-        stringBuilder.append("System.out.print(\"").append(stringLiteral.value).append("\");\n");
+        stringBuilder.append("System.out.print(\"").append(stringLiteral.value).append(": \");\n");
 
         if (variable.type.equals("NUMVAL")) {
             stringBuilder.append(variable.value).append(" = scanner.nextInt();\n");
